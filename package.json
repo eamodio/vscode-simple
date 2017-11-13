@@ -1,0 +1,46 @@
+{
+    "name": "simple",
+    "version": "0.0.1",
+    "author": {
+        "name": "Eric Amodio",
+        "email": "eamodio@gmail.com"
+    },
+    "publisher": "eamodio",
+    "engines": {
+        "vscode": "^1.18.0"
+    },
+    "displayName": "Simple",
+    "description": "Simple sample",
+    "categories": [
+        "Other"
+    ],
+    "homepage": "https://github.com/eamodio/vscode-simple/blob/master/README.md",
+    "bugs": {
+        "url": "https://github.com/eamodio/vscode-simple/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/eamodio/vscode-simple"
+    },
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/extension",
+    "scripts": {
+        "clean": "git clean -xdf",
+        "compile": "npm run lint && tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "lint": "tslint --project tslint.json",
+        "pack": "npm run clean && vsce package",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "pub": "npm run clean && vsce publish",
+        "reset": "npm run clean && npm install",
+        "vscode:prepublish": "npm install --no-save && npm run compile",
+        "prepush": "npm run compile"
+    },
+    "devDependencies": {
+        "@types/node": "^8.0.51",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6"
+    }
+}
