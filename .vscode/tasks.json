@@ -17,32 +17,14 @@
     },
     "tasks": [
         {
-            "label": "compile",
+            "label": "watch",
             "type": "npm",
-            "script": "compile",
-            "problemMatcher": [
-                "$tsc",
-                "$tslint5"
-            ],
+            "script": "watch",
+            "problemMatcher": ["$tsc-watch"],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
-        },
-        {
-            "label": "lint",
-            "type": "npm",
-            "script": "lint",
-            "problemMatcher": [
-                "$tslint5"
-            ],
-            "group": "build"
-        },
-        {
-            "type": "npm",
-            "script": "watch",
-            "isBackground": true,
-            "problemMatcher": "$tsc-watch"
         }
     ]
 }

@@ -1,14 +1,19 @@
 {
     "editor.insertSpaces": true,
-    "files.exclude": {
-        "**/node_modules": true,
-        "**/out": true
+    "eslint.packageManager": "yarn",
+    "files.associations": {
+        ".eslintrc.json": "jsonc"
     },
     "files.trimTrailingWhitespace": true,
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/out": true
+    "npm.packageManager": "yarn",
+    "postcssSorting.config": {
+        "order": ["custom-properties", "dollar-variables", "declarations", "at-rules", "rules"],
+        "properties-order": "alphabetical",
+        "unspecified-properties-position": "bottom"
     },
-    "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
-    "typescript.tsdk": "./node_modules/typescript/lib" // we want to use the TS server from our node_modules folder to control its version
+    "prettier.requireConfig": true,
+    "prettier.eslintIntegration": true,
+    "search.exclude": {
+        "**/dist": true
+    }
 }

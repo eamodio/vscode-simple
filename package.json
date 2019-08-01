@@ -7,7 +7,7 @@
     },
     "publisher": "eamodio",
     "engines": {
-        "vscode": "^1.18.0"
+        "vscode": "^1.36.0"
     },
     "displayName": "Simple",
     "description": "Simple sample",
@@ -22,25 +22,38 @@
         "type": "git",
         "url": "https://github.com/eamodio/vscode-simple"
     },
+    "contributes": {
+        "commands": [
+            {
+                "command": "simple.views.command",
+                "title": "Command",
+                "category": "Simple"
+            }
+        ],
+        "views": {
+            "explorer": [
+                {
+                    "id": "simple.view",
+                    "name": "Simple"
+                }
+            ]
+        }
+    },
     "activationEvents": [
         "*"
     ],
-    "main": "./out/src/extension",
+    "main": "./dist/extension",
     "scripts": {
-        "clean": "git clean -xdf",
-        "compile": "npm run lint && tsc -p ./",
+        "clean": "git clean -Xdf -e !node_modules -e !node_modules/**/*",
+        "compile": "tsc -p ./",
+        "pack": "vsce package --yarn",
+        "reset": "yarn run clean && yarn --frozen-lockfile",
         "watch": "tsc -watch -p ./",
-        "lint": "tslint --project tslint.json",
-        "pack": "npm run clean && vsce package",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "pub": "npm run clean && vsce publish",
-        "reset": "npm run clean && npm install",
-        "vscode:prepublish": "npm install --no-save && npm run compile",
-        "prepush": "npm run compile"
+        "vscode:prepublish": "yarn run reset && yarn run bundle"
     },
     "devDependencies": {
-        "@types/node": "^8.0.51",
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6"
+        "@types/node": "10.11.7",
+        "@types/vscode": "1.36.0",
+        "typescript": "3.5.3"
     }
 }
