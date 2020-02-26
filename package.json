@@ -1,59 +1,69 @@
 {
-    "name": "simple",
-    "version": "0.0.1",
-    "author": {
-        "name": "Eric Amodio",
-        "email": "eamodio@gmail.com"
-    },
-    "publisher": "eamodio",
-    "engines": {
-        "vscode": "^1.36.0"
-    },
-    "displayName": "Simple",
-    "description": "Simple sample",
-    "categories": [
-        "Other"
-    ],
-    "homepage": "https://github.com/eamodio/vscode-simple/blob/master/README.md",
-    "bugs": {
-        "url": "https://github.com/eamodio/vscode-simple/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/eamodio/vscode-simple"
-    },
-    "contributes": {
-        "commands": [
-            {
-                "command": "simple.views.command",
-                "title": "Command",
-                "category": "Simple"
-            }
-        ],
-        "views": {
-            "explorer": [
-                {
-                    "id": "simple.view",
-                    "name": "Simple"
-                }
-            ]
-        }
-    },
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./dist/extension",
-    "scripts": {
-        "clean": "git clean -Xdf -e !node_modules -e !node_modules/**/*",
-        "compile": "tsc -p ./",
-        "pack": "vsce package --yarn",
-        "reset": "yarn run clean && yarn --frozen-lockfile",
-        "watch": "tsc -watch -p ./",
-        "vscode:prepublish": "yarn run reset && yarn run bundle"
-    },
-    "devDependencies": {
-        "@types/node": "10.11.7",
-        "@types/vscode": "1.36.0",
-        "typescript": "3.5.3"
-    }
+	"name": "simple",
+	"version": "0.0.1",
+	"author": {
+		"name": "Eric Amodio",
+		"email": "eamodio@gmail.com"
+	},
+	"publisher": "eamodio",
+	"engines": {
+		"vscode": "^1.42.0"
+	},
+	"displayName": "Simple",
+	"description": "Simple sample",
+	"categories": [
+		"Other"
+	],
+	"homepage": "https://github.com/eamodio/vscode-simple/blob/master/README.md",
+	"bugs": {
+		"url": "https://github.com/eamodio/vscode-simple/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/eamodio/vscode-simple"
+	},
+	"enableProposedApi": true,
+	"contributes": {
+		"commands": [
+			{
+				"command": "simple.views.command",
+				"title": "Command",
+				"category": "Simple"
+			}
+		],
+		"views": {
+			"explorer": [
+				{
+					"id": "simple.view",
+					"name": "Simple"
+				}
+			]
+		}
+	},
+	"activationEvents": [
+		"*"
+	],
+	"main": "./dist/extension",
+	"scripts": {
+		"clean": "git clean -Xdf -e !node_modules -e !node_modules/**/*",
+		"compile": "tsc -p ./",
+		"lint": "eslint src/**/*.ts --fix",
+		"pack": "vsce package --yarn",
+		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\"",
+		"reset": "yarn run clean && yarn --frozen-lockfile",
+		"watch": "tsc -watch -p ./",
+		"vscode:prepublish": "yarn run reset && yarn run bundle"
+	},
+	"devDependencies": {
+		"@types/node": "12.12.24",
+		"@types/vscode": "1.42.0",
+		"@typescript-eslint/eslint-plugin": "2.21.0",
+		"@typescript-eslint/parser": "2.21.0",
+		"eslint": "6.8.0",
+		"eslint-cli": "1.1.1",
+		"eslint-config-prettier": "6.10.0",
+		"eslint-plugin-import": "2.20.1",
+		"prettier": "1.19.1",
+		"typescript": "3.8.2"
+	}
 }
