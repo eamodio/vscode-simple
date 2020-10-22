@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { GitExtension } from './git';
 
+// foo
 export function activate(context: vscode.ExtensionContext) {
 	// const gitExtension = await vscode.extensions.getExtension<GitExtension>('vscode.git')?.activate();
 	// if (gitExtension?.enabled !== true) {
