@@ -12,6 +12,24 @@
 			"sourceMaps": true,
 			"outFiles": ["${workspaceRoot}/dist/src/**/*.js"],
 			"preLaunchTask": "watch"
+		},
+		{
+			"name": "Watch & Launch Extension (cleanroom)",
+			"type": "pwa-extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--user-data-dir=${workspaceFolder}/.vscode-clean",
+				"--extensions-dir=${workspaceFolder}/.vscode-clean/extensions",
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
+			"cwd": "${workspaceFolder}",
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"preLaunchTask": "${defaultBuildTask}",
+			"skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/resources/app/out/vs/**"],
+			"smartStep": true,
+			"sourceMaps": true,
+			"trace": true
 		}
 	]
 }

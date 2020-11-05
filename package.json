@@ -22,12 +22,11 @@
 		"type": "git",
 		"url": "https://github.com/eamodio/vscode-simple"
 	},
-	"enableProposedApi": true,
 	"contributes": {
 		"commands": [
 			{
-				"command": "simple.views.command",
-				"title": "Command",
+				"command": "simple.command",
+				"title": "Refresh",
 				"category": "Simple"
 			}
 		],
@@ -38,7 +37,27 @@
 					"name": "Simple"
 				}
 			]
-		}
+		},
+		"colors": [
+			{
+				"id": "simple.iconColor1",
+				"description": "Specifies the icon color 1",
+				"defaults": {
+					"dark": "#35B15E",
+					"light": "#35B15E",
+					"highContrast": "#35B15E"
+				}
+			},
+			{
+				"id": "simple.iconColor2",
+				"description": "Specifies the icon color 2",
+				"defaults": {
+					"dark": "#B15E35",
+					"light": "#B15E35",
+					"highContrast": "#B15E35"
+				}
+			}
+		]
 	},
 	"activationEvents": [
 		"*"
@@ -52,7 +71,7 @@
 		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\"",
 		"reset": "yarn run clean && yarn --frozen-lockfile",
 		"watch": "tsc -watch -p ./",
-		"vscode:prepublish": "yarn run reset && yarn run bundle"
+		"vscode:prepublish": "yarn run reset && yarn run compile"
 	},
 	"devDependencies": {
 		"@types/node": "12.12.24",
@@ -63,6 +82,7 @@
 		"eslint-cli": "1.1.1",
 		"eslint-config-prettier": "6.10.0",
 		"eslint-plugin-import": "2.20.1",
+		"vsce": "1.81.1",
 		"prettier": "1.19.1",
 		"typescript": "3.8.2"
 	}
