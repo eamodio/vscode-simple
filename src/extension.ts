@@ -26,7 +26,7 @@ class SimpleTree implements vscode.TreeDataProvider<vscode.TreeItem> {
 			const child = this.children[random(0, 4)];
 			child.label = `${child.contextValue} ${Date.now()}`;
 			this.refresh(child);
-		}, 10000);
+		}, 1000);
 	}
 
 	refresh(item?: vscode.TreeItem) {
