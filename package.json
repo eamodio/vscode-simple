@@ -40,6 +40,35 @@
 				"category": "Simple"
 			}
 		],
+		"menus": {
+			"editor/context": [
+				{
+					"submenu": "gitlens/editor/context/copy",
+					"when": "editorTextFocus",
+					"group": "9_cutcopypaste@3"
+				}
+			],
+			"gitlens/editor/context/copy": [
+				{
+					"command": "simple.setTrue",
+					"group": "1_a@1"
+				},
+				{
+					"command": "simple.setFalse",
+					"group": "1_a@2"
+				},
+				{
+					"command": "simple.setUndefined",
+					"group": "1_a@3"
+				}
+			]
+		},
+		"submenus": [
+			{
+				"id": "gitlens/editor/context/copy",
+				"label": "Copy as"
+			}
+		],
 		"views": {
 			"explorer": [
 				{
