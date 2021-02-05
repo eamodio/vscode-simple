@@ -25,78 +25,53 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "simple.setTrue",
-				"title": "Set Sync Key: True",
-				"category": "Simple"
+				"command": "simple.command",
+				"title": "Show Revision Commit",
+				"category": "Simple",
+				"icon": "$(arrow-up)"
 			},
 			{
-				"command": "simple.setFalse",
-				"title": "Set Sync Key: False",
-				"category": "Simple"
+				"command": "simple.commandInDiffLeft",
+				"title": "Show Revision Commit",
+				"category": "Simple",
+				"icon": "$(arrow-left)"
 			},
 			{
-				"command": "simple.setUndefined",
-				"title": "Set Sync Key: Undefined",
-				"category": "Simple"
+				"command": "simple.commandInDiffRight",
+				"title": "Show Revision Commit",
+				"category": "Simple",
+				"icon": "$(arrow-right)"
 			}
 		],
 		"menus": {
-			"editor/context": [
+			"commandPalette": [
 				{
-					"submenu": "gitlens/editor/context/copy",
-					"when": "editorTextFocus",
-					"group": "9_cutcopypaste@3"
+					"command": "simple.commandInDiffLeft",
+					"when": "false"
+				},
+				{
+					"command": "simple.commandInDiffRight",
+					"when": "false"
 				}
 			],
-			"gitlens/editor/context/copy": [
+			"editor/title": [
 				{
-					"command": "simple.setTrue",
-					"group": "1_a@1"
+					"command": "simple.command",
+					"when": "!isInDiffEditor",
+					"group": "navigation"
 				},
 				{
-					"command": "simple.setFalse",
-					"group": "1_a@2"
+					"command": "simple.commandInDiffLeft",
+					"when": "isInDiffEditor && !isInDiffRightEditor",
+					"group": "navigation"
 				},
 				{
-					"command": "simple.setUndefined",
-					"group": "1_a@3"
+					"command": "simple.commandInDiffRight",
+					"when": "isInDiffRightEditor",
+					"group": "navigation"
 				}
 			]
-		},
-		"submenus": [
-			{
-				"id": "gitlens/editor/context/copy",
-				"label": "Copy as"
-			}
-		],
-		"views": {
-			"explorer": [
-				{
-					"id": "simple.view",
-					"name": "Simple"
-				}
-			]
-		},
-		"colors": [
-			{
-				"id": "simple.iconColor1",
-				"description": "Specifies the icon color 1",
-				"defaults": {
-					"dark": "#35B15E",
-					"light": "#35B15E",
-					"highContrast": "#35B15E"
-				}
-			},
-			{
-				"id": "simple.iconColor2",
-				"description": "Specifies the icon color 2",
-				"defaults": {
-					"dark": "#B15E35",
-					"light": "#B15E35",
-					"highContrast": "#B15E35"
-				}
-			}
-		]
+		}
 	},
 	"activationEvents": [
 		"*"
