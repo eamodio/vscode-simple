@@ -71,6 +71,8 @@
 		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\"",
 		"reset": "yarn run clean && yarn --frozen-lockfile",
 		"watch": "tsc -watch -p ./",
+		"update-dts": "pushd \"src/@types\" && npx vscode-dts dev && popd",
+		"update-dts:master": "pushd \"src/@types\" && npx vscode-dts master && popd",
 		"vscode:prepublish": "yarn run reset && yarn run compile"
 	},
 	"devDependencies": {
