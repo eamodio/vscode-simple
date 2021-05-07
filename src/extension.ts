@@ -1,4 +1,5 @@
 'use strict';
+import { clear } from 'console';
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -20,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('works!');
 }`;
 
-	vscode.commands.registerCommand('simple.command', () => {
+	vscode.commands.registerCommand('simple.command', async () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) return;
 
@@ -29,6 +30,12 @@ export function activate(context: vscode.ExtensionContext) {
 		if (end.character !== cursor.character) return;
 
 		const lines = content.split('\n');
+
+		const editorConfig = vscode.workspace.getConfiguration('editor');
+		let lineHeight = editorConfig.get('lineHeight');
+		if (lineHeight === 0) {
+			lineHeight = Math.floor(editorConfig.get<number>('fontSize', 14) * 1.4);
+		}
 
 		const firstGhostLine = vscode.window.createTextEditorDecorationType({
 			rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
@@ -42,8 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
 			rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
 			before: {
 				color: new vscode.ThemeColor('simple.ghostTextColor'),
-				textDecoration: `none;display:flex;white-space:pre;`,
-				// textDecoration: `none;display:inline-block;margin-bottom:${lines.length * 2}ch;`,
+				textDecoration: `none;display:block;white-space:pre;`,
 			},
 		});
 
@@ -51,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 			rangeBehavior: vscode.DecorationRangeBehavior.ClosedOpen,
 			before: {
 				contentText: ' ',
-				textDecoration: `none;display:flex;margin-bottom:${lines.length * 2}ch;`,
+				textDecoration: `none;display:block;margin-bottom:calc(${lineHeight}px * ${lines.length});`,
 			},
 		});
 
@@ -82,13 +88,15 @@ export function activate(context: vscode.ExtensionContext) {
 					textDecoration: `none;content:'${lines
 						.join('\\A')
 						.replace(/['\\][^A]/g, '\\$&')
-						.replace(' ', '\u00a0')}';`,
+						.replace(' ', '\u00a0')}';margin-bottom:calc(-${lineHeight}px * ${lines.length});`,
 				},
 			},
 		});
 
+		await vscode.workspace.getConfiguration('editor').update('codeLens', false);
+
 		const nonGhostDecorations: vscode.DecorationOptions[] = [];
-		for (let i = cursor.line + 1; i < editor.visibleRanges[0].end.line; i++) {
+		for (let i = cursor.line + 1; i < editor.visibleRanges[0].end.line + 100; i++) {
 			nonGhostDecorations.push({
 				range: new vscode.Range(new vscode.Position(i, 0), new vscode.Position(i, 0)),
 			});
@@ -98,11 +106,19 @@ export function activate(context: vscode.ExtensionContext) {
 		editor.setDecorations(nextGhostLine, nextGhostLineDecorations);
 		editor.setDecorations(nonGhostLines, nonGhostDecorations);
 
-		let disposable = vscode.window.onDidChangeTextEditorSelection((e) => {
-			disposable.dispose();
-			editor.setDecorations(firstGhostLine, []);
-			editor.setDecorations(nextGhostLine, []);
-			editor.setDecorations(nonGhostLines, []);
-		});
+		let disposables: vscode.Disposable[] = [];
+
+		function reset() {
+			disposables.forEach((d) => d.dispose());
+			editor!.setDecorations(firstGhostLine, []);
+			editor!.setDecorations(nextGhostLine, []);
+			editor!.setDecorations(nonGhostLines, []);
+			vscode.workspace.getConfiguration('editor').update('codeLens', true);
+		}
+
+		disposables.push(
+			vscode.window.onDidChangeTextEditorSelection(() => reset()),
+			vscode.window.onDidChangeTextEditorVisibleRanges(() => reset())
+		);
 	});
 }
