@@ -2,150 +2,107 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-	// const hello = 'Hello';
-	// const world = 'World';
-	// void vscode.window.showInformationMessage(
-	// 	'1 Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :)',
-	// 	hello,
-	// 	world
-	// );
+	const content = `function foo(){
 
-	// void vscode.window.showWarningMessage(
-	// 	'2 Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :)',
-	// 	hello,
-	// 	world
-	// );
+	console.log('hello');
+	console.log('world');
 
-	// void vscode.window.showErrorMessage(
-	// 	'3 Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :) Hello World! How are things going today? Well great? :)',
-	// 	hello,
-	// 	world
-	// );
+	console.log('works!');
 
-	const tdp = new SimpleTree();
-	vscode.window.createTreeView('simple.view', { treeDataProvider: tdp });
-	vscode.commands.registerCommand('simple.command', () => tdp.refresh());
-}
+	console.log('hello');
+	console.log('world');
 
-let count = 0;
+	console.log('works!');
 
-class SimpleTree implements vscode.TreeDataProvider<TreeItemWithChildren> {
-	private _onDidChangeTreeData = new vscode.EventEmitter<TreeItemWithChildren | null | undefined>();
-	onDidChangeTreeData = this._onDidChangeTreeData.event;
+	console.log('hello');
+	console.log('world');
 
-	children: TreeItemWithChildren[];
+	console.log('works!');
+}`;
 
-	constructor() {
-		this.children = [
-			this.getChild('Behind', [
-				this.getChild(
-					'Commits',
-					Promise.resolve([
-						this.getChild('commit 1'),
-						this.getChild('commit 2'),
-						this.getChild('commit 3'),
-						this.getChild('commit 4'),
-					])
-				),
-				this.getChild(
-					'files changed',
-					Promise.resolve([
-						this.getChild('file 1'),
-						this.getChild('file 2'),
-						this.getChild('file 3'),
-						this.getChild('file 4'),
-					])
-				),
-			]),
-			this.getChild('Ahead', [
-				this.getChild(
-					'Commits',
-					Promise.resolve([
-						this.getChild('commit 1'),
-						this.getChild('commit 2'),
-						this.getChild('commit 3'),
-						this.getChild('commit 4'),
-					])
-				),
-				this.getChild(
-					'files changed',
-					Promise.resolve([
-						this.getChild('file 1'),
-						this.getChild('file 2'),
-						this.getChild('file 3'),
-						this.getChild('file 4'),
-					])
-				),
-			]),
-			this.getChild(
-				'files changed',
-				Promise.resolve([
-					this.getChild('file 1'),
-					this.getChild('file 2'),
-					this.getChild('file 3'),
-					this.getChild('file 4'),
-				])
-			),
-		];
+	vscode.commands.registerCommand('simple.command', () => {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) return;
 
-		setInterval(async () => {
-			let item: TreeItemWithChildren | undefined = undefined;
-			switch (random(0, 2)) {
-				case 0:
-					// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-					item = (await this.children[0].children)?.[1]!;
-					break;
-				case 1:
-					// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-					item = (await this.children[1].children)?.[1]!;
-					break;
-				case 2:
-					item = this.children[2];
-					break;
-			}
-			if (!item) return;
+		const cursor = editor.selection.active;
+		const end = editor.document.validatePosition(new vscode.Position(cursor.line, Number.MAX_VALUE));
+		if (end.character !== cursor.character) return;
 
-			item.label = `${item.contextValue ?? ''} ${Date.now()}`;
-			this.refresh(item);
-		}, 1000);
-	}
+		const lines = content.split('\n');
 
-	refresh(item?: TreeItemWithChildren) {
-		this._onDidChangeTreeData.fire(item);
-	}
+		const firstGhostLine = vscode.window.createTextEditorDecorationType({
+			rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+			textDecoration: 'none',
+			before: {
+				color: new vscode.ThemeColor('simple.ghostTextColor'),
+			},
+		});
 
-	getTreeItem(element: vscode.TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
-		if (element) return element;
+		const nextGhostLine = vscode.window.createTextEditorDecorationType({
+			rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+			before: {
+				color: new vscode.ThemeColor('simple.ghostTextColor'),
+				textDecoration: `none;display:flex;white-space:pre;`,
+				// textDecoration: `none;display:inline-block;margin-bottom:${lines.length * 2}ch;`,
+			},
+		});
 
-		const item = new TreeItemWithChildren('root', vscode.TreeItemCollapsibleState.Expanded);
-		return item;
-	}
+		const nonGhostLines = vscode.window.createTextEditorDecorationType({
+			rangeBehavior: vscode.DecorationRangeBehavior.ClosedOpen,
+			before: {
+				contentText: ' ',
+				textDecoration: `none;display:flex;margin-bottom:${lines.length * 2}ch;`,
+			},
+		});
 
-	getChildren(element?: TreeItemWithChildren): vscode.ProviderResult<TreeItemWithChildren[]> {
-		return element?.children ?? this.children;
-	}
+		const firstGhostLineDecorations: vscode.DecorationOptions[] = [];
+		firstGhostLineDecorations.push({
+			range: new vscode.Range(cursor, cursor),
+			renderOptions: {
+				before: {
+					contentText: lines.shift() || ' ',
+				},
+			},
+		});
 
-	private getChild(
-		label: string,
-		children?: TreeItemWithChildren[] | Promise<TreeItemWithChildren[]>
-	): TreeItemWithChildren {
-		const item = new TreeItemWithChildren(label, vscode.TreeItemCollapsibleState.Collapsed);
-		// item.iconPath = new vscode.ThemeIcon(icon, color ? new vscode.ThemeColor(color) : undefined);
-		item.id = `${count++}`;
-		item.contextValue = `${item.id}: ${label}`;
-		item.children = children;
-		return item;
-	}
-}
+		const nextGhostLineDecorations: vscode.DecorationOptions[] = [];
+		const range = editor.document.validateRange(
+			new vscode.Range(
+				new vscode.Position(cursor.line + 1, 0),
+				new vscode.Position(cursor.line + 1, Number.MAX_VALUE)
+			)
+		);
 
-function random(min: number, max: number) {
-	return Math.floor(Math.random() * (max - min + 1) + min);
-}
+		nextGhostLineDecorations.push({
+			range: range,
+			renderOptions: {
+				before: {
+					// can't use contentText because it will escape the `\A`
+					contentText: ' ', //lines.join('\\A'),
+					textDecoration: `none;content:'${lines
+						.join('\\A')
+						.replace(/['\\][^A]/g, '\\$&')
+						.replace(' ', '\u00a0')}';`,
+				},
+			},
+		});
 
-class TreeItemWithChildren extends vscode.TreeItem {
-	children?: TreeItemWithChildren[] | Promise<TreeItemWithChildren[]>;
+		const nonGhostDecorations: vscode.DecorationOptions[] = [];
+		for (let i = cursor.line + 1; i < editor.visibleRanges[0].end.line; i++) {
+			nonGhostDecorations.push({
+				range: new vscode.Range(new vscode.Position(i, 0), new vscode.Position(i, 0)),
+			});
+		}
 
-	constructor(public label: string, public collapsibleState: vscode.TreeItemCollapsibleState) {
-		super(label, collapsibleState);
-	}
+		editor.setDecorations(firstGhostLine, firstGhostLineDecorations);
+		editor.setDecorations(nextGhostLine, nextGhostLineDecorations);
+		editor.setDecorations(nonGhostLines, nonGhostDecorations);
+
+		let disposable = vscode.window.onDidChangeTextEditorSelection((e) => {
+			disposable.dispose();
+			editor.setDecorations(firstGhostLine, []);
+			editor.setDecorations(nextGhostLine, []);
+			editor.setDecorations(nonGhostLines, []);
+		});
+	});
 }

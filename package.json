@@ -7,7 +7,7 @@
 	},
 	"publisher": "eamodio",
 	"engines": {
-		"vscode": "^1.42.0"
+		"vscode": "^1.56.0"
 	},
 	"displayName": "Simple",
 	"description": "Simple sample",
@@ -26,35 +26,18 @@
 		"commands": [
 			{
 				"command": "simple.command",
-				"title": "Refresh",
+				"title": "Ghost Text",
 				"category": "Simple"
 			}
 		],
-		"views": {
-			"explorer": [
-				{
-					"id": "simple.view",
-					"name": "Simple"
-				}
-			]
-		},
 		"colors": [
 			{
-				"id": "simple.iconColor1",
-				"description": "Specifies the icon color 1",
+				"id": "simple.ghostTextColor",
+				"description": "Ghost Text Color",
 				"defaults": {
-					"dark": "#35B15E",
-					"light": "#35B15E",
-					"highContrast": "#35B15E"
-				}
-			},
-			{
-				"id": "simple.iconColor2",
-				"description": "Specifies the icon color 2",
-				"defaults": {
-					"dark": "#B15E35",
-					"light": "#B15E35",
-					"highContrast": "#B15E35"
+					"dark": "#99999959",
+					"light": "#99999959",
+					"highContrast": "#99999999"
 				}
 			}
 		]
@@ -77,15 +60,15 @@
 	},
 	"devDependencies": {
 		"@types/node": "12.12.24",
-		"@types/vscode": "1.42.0",
-		"@typescript-eslint/eslint-plugin": "2.21.0",
-		"@typescript-eslint/parser": "2.21.0",
-		"eslint": "6.8.0",
+		"@types/vscode": "1.56.0",
+		"@typescript-eslint/eslint-plugin": "4.22.1",
+		"@typescript-eslint/parser": "4.22.1",
+		"eslint": "7.25.0",
 		"eslint-cli": "1.1.1",
-		"eslint-config-prettier": "6.10.0",
-		"eslint-plugin-import": "2.20.1",
-		"prettier": "1.19.1",
-		"typescript": "3.8.2",
-		"vsce": "1.81.1"
+		"eslint-config-prettier": "8.3.0",
+		"eslint-plugin-import": "2.22.1",
+		"prettier": "2.2.1",
+		"typescript": "4.2.4",
+		"vsce": "1.88.0"
 	}
 }
