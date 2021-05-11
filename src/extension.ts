@@ -2,56 +2,63 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-	const tdp = new SimpleTree();
-	vscode.window.createTreeView('simple.view', { treeDataProvider: tdp });
-	vscode.commands.registerCommand('simple.command', () => tdp.refresh());
-}
+	context.subscriptions.push(
+		vscode.commands.registerCommand('simple.value', () => {
+			const qp = vscode.window.createQuickPick();
+			qp.items = [
+				{ label: '1', description: '1' },
+				{ label: '2', description: '2' },
+				{ label: '3', description: '3' },
+				{ label: '4', description: '4' },
+			];
 
-class SimpleTree implements vscode.TreeDataProvider<vscode.TreeItem> {
-	private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | null | undefined>();
-	onDidChangeTreeData = this._onDidChangeTreeData.event;
+			const timer = setInterval(() => {
+				qp.value = Math.floor(Math.random() * qp.items.length).toString();
+			}, 2500);
 
-	children: vscode.TreeItem[];
+			qp.onDidHide(() => clearInterval(timer));
+			qp.onDidChangeActive((e) => console.log('onDidChangeActive', e[0].label));
+			qp.onDidChangeSelection((e) => console.log('onDidChangeSelection', e[0].label));
+			qp.onDidChangeValue((e) => console.log('onDidChangeValue', e));
+			qp.show();
+		}),
+		vscode.commands.registerCommand('simple.active', () => {
+			const qp = vscode.window.createQuickPick();
+			qp.items = [
+				{ label: '1', description: '1' },
+				{ label: '2', description: '2' },
+				{ label: '3', description: '3' },
+				{ label: '4', description: '4' },
+			];
 
-	constructor() {
-		this.children = [
-			this.getChild('Compare', 'git-compare'),
-			this.getChild('Push', 'cloud-upload', 'simple.iconColor1'),
-			this.getChild('Pull', 'cloud-download', 'simple.iconColor2'),
-			this.getChild('Push', 'cloud-upload', 'simple.iconColor2'),
-			this.getChild('Pull', 'cloud-download', 'simple.iconColor1')
-		];
+			const timer = setInterval(() => {
+				qp.activeItems = [qp.items[Math.floor(Math.random() * qp.items.length)]];
+			}, 2500);
 
-		setInterval(() => {
-			const child = this.children[random(0, 4)];
-			child.label = `${child.contextValue} ${Date.now()}`;
-			this.refresh(child);
-		}, 1000);
-	}
+			qp.onDidHide(() => clearInterval(timer));
+			qp.onDidChangeActive((e) => console.log('onDidChangeActive', e[0].label));
+			qp.onDidChangeSelection((e) => console.log('onDidChangeSelection', e[0].label));
+			qp.onDidChangeValue((e) => console.log('onDidChangeValue', e));
+			qp.show();
+		}),
+		vscode.commands.registerCommand('simple.selected', () => {
+			const qp = vscode.window.createQuickPick();
+			qp.items = [
+				{ label: '1', description: '1' },
+				{ label: '2', description: '2' },
+				{ label: '3', description: '3' },
+				{ label: '4', description: '4' },
+			];
 
-	refresh(item?: vscode.TreeItem) {
-		this._onDidChangeTreeData.fire(item);
-	}
+			const timer = setInterval(() => {
+				qp.selectedItems = [qp.items[Math.floor(Math.random() * qp.items.length)]];
+			}, 2500);
 
-	getTreeItem(element: vscode.TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
-		if (element) return element;
-
-		const item = new vscode.TreeItem('root', vscode.TreeItemCollapsibleState.Expanded);
-		return item;
-	}
-
-	getChildren(element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
-		return this.children;
-	}
-
-	private getChild(label: string, icon: string, color?: string) {
-		const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
-		item.iconPath = new (vscode.ThemeIcon as any)(icon, color ? new vscode.ThemeColor(color) : undefined);
-		item.contextValue = label;
-		return item;
-	}
-}
-
-function random(min: number, max: number) {
-	return Math.floor(Math.random() * (max - min + 1) + min);
+			qp.onDidHide(() => clearInterval(timer));
+			qp.onDidChangeActive((e) => console.log('onDidChangeActive', e[0].label));
+			qp.onDidChangeSelection((e) => console.log('onDidChangeSelection', e[0].label));
+			qp.onDidChangeValue((e) => console.log('onDidChangeValue', e));
+			qp.show();
+		})
+	);
 }

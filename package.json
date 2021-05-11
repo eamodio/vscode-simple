@@ -25,37 +25,19 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "simple.command",
-				"title": "Refresh",
-				"category": "Simple"
-			}
-		],
-		"views": {
-			"explorer": [
-				{
-					"id": "simple.view",
-					"name": "Simple"
-				}
-			]
-		},
-		"colors": [
-			{
-				"id": "simple.iconColor1",
-				"description": "Specifies the icon color 1",
-				"defaults": {
-					"dark": "#35B15E",
-					"light": "#35B15E",
-					"highContrast": "#35B15E"
-				}
+				"command": "simple.value",
+				"title": "Change Value",
+				"category": "QuickPick"
 			},
 			{
-				"id": "simple.iconColor2",
-				"description": "Specifies the icon color 2",
-				"defaults": {
-					"dark": "#B15E35",
-					"light": "#B15E35",
-					"highContrast": "#B15E35"
-				}
+				"command": "simple.active",
+				"title": "Change Active Items",
+				"category": "QuickPick"
+			},
+			{
+				"command": "simple.selected",
+				"title": "Change Selected Items",
+				"category": "QuickPick"
 			}
 		]
 	},
@@ -71,6 +53,8 @@
 		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\"",
 		"reset": "yarn run clean && yarn --frozen-lockfile",
 		"watch": "tsc -watch -p ./",
+		"update-dts": "pushd \"src/@types\" && npx vscode-dts dev && popd",
+		"update-dts:master": "pushd \"src/@types\" && npx vscode-dts master && popd",
 		"vscode:prepublish": "yarn run reset && yarn run compile"
 	},
 	"devDependencies": {
