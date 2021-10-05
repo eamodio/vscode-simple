@@ -7,7 +7,7 @@
 	},
 	"publisher": "eamodio",
 	"engines": {
-		"vscode": "^1.42.0"
+		"vscode": "^1.60.0"
 	},
 	"displayName": "Simple",
 	"description": "Simple sample",
@@ -25,31 +25,27 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "simple.value",
-				"title": "Change Value",
-				"category": "QuickPick"
+				"command": "simple.open",
+				"title": "Open Virtual File",
+				"category": "Simple"
 			},
 			{
-				"command": "simple.active",
-				"title": "Change Active Items",
-				"category": "QuickPick"
-			},
-			{
-				"command": "simple.selected",
-				"title": "Change Selected Items",
-				"category": "QuickPick"
+				"command": "simple.reset",
+				"title": "Reset",
+				"category": "Simple"
 			}
 		]
 	},
 	"activationEvents": [
-		"*"
+		"*",
+		"onFileSystem:simple"
 	],
 	"main": "./dist/extension",
 	"scripts": {
 		"clean": "git clean -Xdf -e !node_modules -e !node_modules/**/*",
 		"compile": "tsc -p ./",
 		"lint": "eslint src/**/*.ts --fix",
-		"pack": "vsce package --yarn",
+		"pack": "npx vsce package --yarn",
 		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\"",
 		"reset": "yarn run clean && yarn --frozen-lockfile",
 		"watch": "tsc -watch -p ./",
@@ -59,15 +55,14 @@
 	},
 	"devDependencies": {
 		"@types/node": "12.12.24",
-		"@types/vscode": "1.42.0",
-		"@typescript-eslint/eslint-plugin": "2.21.0",
-		"@typescript-eslint/parser": "2.21.0",
-		"eslint": "6.8.0",
+		"@types/vscode": "1.60.0",
+		"@typescript-eslint/eslint-plugin": "4.32.0",
+		"@typescript-eslint/parser": "4.32.0",
+		"eslint": "7.32.0",
 		"eslint-cli": "1.1.1",
-		"eslint-config-prettier": "6.10.0",
-		"eslint-plugin-import": "2.20.1",
-		"prettier": "1.19.1",
-		"typescript": "3.8.2",
-		"vsce": "1.81.1"
+		"eslint-config-prettier": "8.3.0",
+		"eslint-plugin-import": "2.24.2",
+		"prettier": "2.4.1",
+		"typescript": "4.4.3"
 	}
 }
