@@ -49,7 +49,7 @@
 		"clean": "git clean -Xdf -e !node_modules -e !node_modules/**/*",
 		"compile": "tsc -p ./",
 		"lint": "eslint src/**/*.ts --fix",
-		"pack": "vsce package --yarn",
+		"package": "vsce package --yarn",
 		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\"",
 		"reset": "yarn run clean && yarn --frozen-lockfile",
 		"watch": "tsc -watch -p ./",
