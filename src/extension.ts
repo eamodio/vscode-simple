@@ -1,10 +1,10 @@
-'use strict';
-import * as vscode from 'vscode';
+import type {ExtensionContext} from "vscode";
+import { commands,  window } from "vscode";
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
 	context.subscriptions.push(
-		vscode.commands.registerCommand('simple.value', () => {
-			const qp = vscode.window.createQuickPick();
+		commands.registerCommand('simple.value', () => {
+			const qp = window.createQuickPick();
 			qp.items = [
 				{ label: '1', description: '1' },
 				{ label: '2', description: '2' },
@@ -17,13 +17,13 @@ export function activate(context: vscode.ExtensionContext) {
 			}, 2500);
 
 			qp.onDidHide(() => clearInterval(timer));
-			qp.onDidChangeActive((e) => console.log('onDidChangeActive', e[0].label));
-			qp.onDidChangeSelection((e) => console.log('onDidChangeSelection', e[0].label));
-			qp.onDidChangeValue((e) => console.log('onDidChangeValue', e));
+			qp.onDidChangeActive(e => console.log('onDidChangeActive', e[0].label));
+			qp.onDidChangeSelection(e => console.log('onDidChangeSelection', e[0].label));
+			qp.onDidChangeValue(e => console.log('onDidChangeValue', e));
 			qp.show();
 		}),
-		vscode.commands.registerCommand('simple.active', () => {
-			const qp = vscode.window.createQuickPick();
+		commands.registerCommand('simple.active', () => {
+			const qp = window.createQuickPick();
 			qp.items = [
 				{ label: '1', description: '1' },
 				{ label: '2', description: '2' },
@@ -36,13 +36,13 @@ export function activate(context: vscode.ExtensionContext) {
 			}, 2500);
 
 			qp.onDidHide(() => clearInterval(timer));
-			qp.onDidChangeActive((e) => console.log('onDidChangeActive', e[0].label));
-			qp.onDidChangeSelection((e) => console.log('onDidChangeSelection', e[0].label));
-			qp.onDidChangeValue((e) => console.log('onDidChangeValue', e));
+			qp.onDidChangeActive(e => console.log('onDidChangeActive', e[0].label));
+			qp.onDidChangeSelection(e => console.log('onDidChangeSelection', e[0].label));
+			qp.onDidChangeValue(e => console.log('onDidChangeValue', e));
 			qp.show();
 		}),
-		vscode.commands.registerCommand('simple.selected', () => {
-			const qp = vscode.window.createQuickPick();
+		commands.registerCommand('simple.selected', () => {
+			const qp = window.createQuickPick();
 			qp.items = [
 				{ label: '1', description: '1' },
 				{ label: '2', description: '2' },
@@ -55,10 +55,10 @@ export function activate(context: vscode.ExtensionContext) {
 			}, 2500);
 
 			qp.onDidHide(() => clearInterval(timer));
-			qp.onDidChangeActive((e) => console.log('onDidChangeActive', e[0].label));
-			qp.onDidChangeSelection((e) => console.log('onDidChangeSelection', e[0].label));
-			qp.onDidChangeValue((e) => console.log('onDidChangeValue', e));
+			qp.onDidChangeActive(e => console.log('onDidChangeActive', e[0].label));
+			qp.onDidChangeSelection(e => console.log('onDidChangeSelection', e[0].label));
+			qp.onDidChangeValue(e => console.log('onDidChangeValue', e));
 			qp.show();
-		})
+		}),
 	);
 }
