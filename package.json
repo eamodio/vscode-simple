@@ -30,18 +30,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "simple.value",
-				"title": "Change Value",
-				"category": "Simple Sample"
-			},
-			{
-				"command": "simple.active",
-				"title": "Change Active Items",
-				"category": "Simple Sample"
-			},
-			{
-				"command": "simple.selected",
-				"title": "Change Selected Items",
+				"command": "simple.webview.open",
+				"title": "Open Webview",
 				"category": "Simple Sample"
 			}
 		]
