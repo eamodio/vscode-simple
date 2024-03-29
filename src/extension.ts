@@ -1,112 +1,119 @@
-import type { CancellationToken, Disposable, ExtensionContext, Progress } from 'vscode';
-import { commands, ProgressLocation, ViewColumn, window } from 'vscode';
+import type { Disposable, ExtensionContext, QuickPickItem } from 'vscode';
+import { commands, window } from 'vscode';
 
 export function activate(context: ExtensionContext) {
 	context.subscriptions.push(
-		commands.registerCommand('simple.webview.open', () => {
-			const panel = window.createWebviewPanel('simple.sample', 'Simple Sample', ViewColumn.Active, {
-				enableScripts: true,
-				localResourceRoots: [],
-				retainContextWhenHidden: true,
-			});
+		commands.registerCommand('simple.quickpick.open', async () => {
+			const items = await showPicker(
+				'Simple QuickPick',
+				'Select an item',
+				getItems(),
+				item => Math.random() < 0.5,
+			);
 
-			panel.webview.html = `<!doctype html>
-<html>
-	<head>
-		<style type="text/css">
-			body, html { width: 100%; height: 100%; }
-			section { width: 100%; height: 100%; }
-			#console { width: 100%; height: 100%; }
-		</style>
-		<script type="text/javascript">
-			window.addEventListener('message', event => {
-				const el = document.getElementById('console');
-				el.value = \`\${el.value || ''}\n\${new Date().toISOString()}\t\${event.data.text}\`;
-			});
-		</script>
-	</head>
-	<body>
-		<section>
-			<h1>Simple Webview Sample</h1>
-			<textarea id="console"></textarea>
-		</section>
-	</body>
-</html>`;
-
-			function postMessage(text: string) {
-				return window.withProgress(
-					{ location: ProgressLocation.Notification, cancellable: true },
-					async (progress: Progress<{ message?: string; increment?: number }>, token: CancellationToken) => {
-						progress.report({ message: `Sending message: ${text}` });
-
-						let timeout: ReturnType<typeof setTimeout> | undefined;
-
-						// It looks like there is a bug where `postMessage` can sometimes just hang infinitely. Not sure why, but ensure we don't hang forever
-						const promise = Promise.race<boolean>([
-							panel.webview.postMessage({ text: text }).then(
-								s => {
-									clearTimeout(timeout);
-									return s;
-								},
-								ex => {
-									clearTimeout(timeout);
-									debugger;
-									void window.showErrorMessage(`Error sending message: ${ex}`);
-									return false;
-								},
-							),
-							new Promise<boolean>(resolve => {
-								token.onCancellationRequested(() => resolve(false));
-
-								timeout = setTimeout(() => {
-									debugger;
-									void window.showErrorMessage(`Timed out sending message: ${text}`);
-									resolve(false);
-								}, 15000);
-							}),
-						]);
-
-						const success = await promise;
-						return success;
-					},
-				);
-			}
-
-			const disposables: Disposable[] = [
-				panel.onDidDispose(() => {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-					disposables.forEach(d => d.dispose());
-				}),
-
-				// NOTE: Uncomment these lines to see that these `postMessage` calls will hang indefinitely right at the start
-
-				// panel.onDidChangeViewState(e => {
-				// 	void postMessage(
-				// 		`panel.onDidChangeViewState: active=${e.webviewPanel.active}, visible=${e.webviewPanel.visible}`,
-				// 	);
-				// }),
-				// window.onDidChangeWindowState(e => {
-				// 	void postMessage(`window.onDidChangeWindowState: focused=${e.focused}`);
-				// }),
-			];
-
-			panel.reveal();
-
-			// NOTE: If you uncomment the lines above, comment these out
-
-			// Avoid setting up the event listeners until after reveal as `postMessage`'s called too early will hang indefinitely
-			setTimeout(() => {
-				disposables.push(
-					panel.onDidChangeViewState(e => {
-						void postMessage(
-							`panel.onDidChangeViewState: active=${e.webviewPanel.active}, visible=${e.webviewPanel.visible}`,
-						);
-					}),
-					window.onDidChangeWindowState(e => {
-						void postMessage(`window.onDidChangeWindowState: focused=${e.focused}`);
-					}),
-				);
-			}, 100);
+			console.log('Selected items:', items);
 		}),
 	);
+}
+
+function getItems(): Promise<SimpleItem[]> {
+	const items: SimpleItem[] = [];
+	for (let i = 1; i <= 100; i++) {
+		items.push({ id: i });
+	}
+	return Promise.resolve(items);
+}
+
+type SimpleItem = { id: number };
+type SimpleQuickPickItem = QuickPickItem & { item: SimpleItem };
+
+async function showPicker(
+	title: string,
+	placeholder: string,
+	simpleItems: Promise<SimpleItem[]>,
+	picked?: (item: SimpleItem) => boolean,
+): Promise<SimpleItem[] | undefined> {
+	const deferred = defer<SimpleItem[] | undefined>();
+	const disposables: Disposable[] = [];
+
+	try {
+		const quickpick = window.createQuickPick<SimpleQuickPickItem>();
+		disposables.push(
+			quickpick,
+			quickpick.onDidHide(() => deferred.fulfill(undefined)),
+			quickpick.onDidAccept(() =>
+				!quickpick.busy ? deferred.fulfill(quickpick.selectedItems.map(c => c.item)) : undefined,
+			),
+		);
+
+		quickpick.ignoreFocusOut = true;
+
+		quickpick.title = title;
+		quickpick.matchOnDescription = true;
+		quickpick.matchOnDetail = true;
+		quickpick.placeholder = 'Loading...';
+
+		quickpick.busy = true;
+		quickpick.show();
+
+		const items = (await simpleItems).map<SimpleQuickPickItem>(i => ({
+			label: `Item ${i.id}`,
+			description: `#${i.id}`,
+			item: i,
+			picked: picked?.(i) ?? false,
+		}));
+
+		if (!deferred.pending) return;
+
+		quickpick.busy = false;
+
+		// NOTE
+		// If this is here (BEFORE setting items), the picker works fine
+		// quickpick.canSelectMany = true;
+
+		quickpick.placeholder = placeholder;
+		quickpick.items = items;
+
+		// If this is here (AFTER setting items AND the quick pick is already visible), the picker will be in a bad state
+		quickpick.canSelectMany = true;
+
+		if (quickpick.canSelectMany) {
+			quickpick.selectedItems = items.filter(i => i.picked);
+		} else {
+			quickpick.activeItems = items.filter(i => i.picked);
+		}
+
+		const picks = await deferred.promise;
+		return picks;
+	} finally {
+		disposables.forEach(d => void d.dispose());
+	}
+}
+
+interface Deferred<T> {
+	readonly pending: boolean;
+	readonly promise: Promise<T>;
+	fulfill: (value: T) => void;
+	cancel(): void;
+}
+type Mutable<T> = { -readonly [P in keyof T]: T[P] };
+
+function defer<T>(): Deferred<T> {
+	const deferred: Mutable<Deferred<T>> = {
+		pending: true,
+		promise: undefined!,
+		fulfill: undefined!,
+		cancel: undefined!,
+	};
+	deferred.promise = new Promise((resolve, reject) => {
+		deferred.fulfill = function (value) {
+			deferred.pending = false;
+			resolve(value);
+		};
+		deferred.cancel = function () {
+			deferred.pending = false;
+			reject();
+		};
+	});
+	return deferred;
 }

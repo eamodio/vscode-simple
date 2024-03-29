@@ -30,8 +30,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "simple.webview.open",
-				"title": "Open Webview",
+				"command": "simple.quickpick.open",
+				"title": "Open Quickpick",
 				"category": "Simple Sample"
 			}
 		]
