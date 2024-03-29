@@ -4,14 +4,9 @@ import { commands, window } from 'vscode';
 export function activate(context: ExtensionContext) {
 	context.subscriptions.push(
 		commands.registerCommand('simple.quickpick.open', async () => {
-			const items = await showPicker(
-				'Simple QuickPick',
-				'Select an item',
-				getItems(),
-				item => Math.random() < 0.5,
-			);
+			const items = await showPicker('Simple QuickPick', 'Select an item', getItems());
 
-			console.log('Selected items:', items);
+			void window.showInformationMessage(`Selected item: ${items?.[0]?.id ?? 'none'}`);
 		}),
 	);
 }
@@ -31,7 +26,6 @@ async function showPicker(
 	title: string,
 	placeholder: string,
 	simpleItems: Promise<SimpleItem[]>,
-	picked?: (item: SimpleItem) => boolean,
 ): Promise<SimpleItem[] | undefined> {
 	const deferred = defer<SimpleItem[] | undefined>();
 	const disposables: Disposable[] = [];
@@ -44,6 +38,11 @@ async function showPicker(
 			quickpick.onDidAccept(() =>
 				!quickpick.busy ? deferred.fulfill(quickpick.selectedItems.map(c => c.item)) : undefined,
 			),
+			quickpick.onDidChangeValue(value => {
+				void window.showInformationMessage(
+					`${quickpick.activeItems.length === 0 ? 'No' : quickpick.activeItems.length} active item`,
+				);
+			}),
 		);
 
 		quickpick.ignoreFocusOut = true;
@@ -60,28 +59,14 @@ async function showPicker(
 			label: `Item ${i.id}`,
 			description: `#${i.id}`,
 			item: i,
-			picked: picked?.(i) ?? false,
 		}));
 
 		if (!deferred.pending) return;
 
 		quickpick.busy = false;
 
-		// NOTE
-		// If this is here (BEFORE setting items), the picker works fine
-		// quickpick.canSelectMany = true;
-
 		quickpick.placeholder = placeholder;
 		quickpick.items = items;
-
-		// If this is here (AFTER setting items AND the quick pick is already visible), the picker will be in a bad state
-		quickpick.canSelectMany = true;
-
-		if (quickpick.canSelectMany) {
-			quickpick.selectedItems = items.filter(i => i.picked);
-		} else {
-			quickpick.activeItems = items.filter(i => i.picked);
-		}
 
 		const picks = await deferred.promise;
 		return picks;
